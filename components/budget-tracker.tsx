@@ -74,7 +74,8 @@ function getDailyFor(spendable: number, days: number): string {
 }
 
 export function BudgetTracker() {
-  const { isLoggedIn, dailyBudget, todaySpent, todayExpenses, addExpense, deleteExpense, daysInCurrentMonth, spendableAmount } = useAuth()
+  const { isLoggedIn, dailyBudget, todaySpent, todayExpenses, addExpense, deleteExpense, daysInCurrentMonth, spendableAmount, user } = useAuth()
+  const emergencyAmount = user?.emergencyMedicalSavings || 0
   const [dialogOpen, setDialogOpen] = useState(false)
   const [amount, setAmount] = useState("")
   const [category, setCategory] = useState("")
@@ -235,6 +236,9 @@ export function BudgetTracker() {
         <div className="rounded-lg border border-border bg-secondary/30 p-4">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Spendable: {"₹"}{formatRupee(spendableAmount)} / month
+            {emergencyAmount > 0 && (
+              <span className="ml-1 font-normal normal-case">(incl. {"₹"}{formatRupee(emergencyAmount)} medical deducted)</span>
+            )}
           </p>
           <div className="grid grid-cols-3 gap-3 text-center">
             {[28, 30, 31].map((d) => (

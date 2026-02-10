@@ -15,7 +15,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2, UserPlus, LogIn, IndianRupee } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Loader2, UserPlus, LogIn, IndianRupee, HeartPulse } from "lucide-react"
 
 export function AuthForm() {
   const { login, signup } = useAuth()
@@ -30,6 +31,8 @@ export function AuthForm() {
   const [signupPassword, setSignupPassword] = useState("")
   const [monthlyIncome, setMonthlyIncome] = useState("")
   const [fixedExpenses, setFixedExpenses] = useState("")
+  const [enableEmergency, setEnableEmergency] = useState(false)
+  const [emergencyMedicalSavings, setEmergencyMedicalSavings] = useState("")
   const [savingsGoal, setSavingsGoal] = useState("")
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -63,6 +66,7 @@ export function AuthForm() {
       signupPassword,
       Number(monthlyIncome),
       Number(fixedExpenses) || 0,
+      enableEmergency ? Number(emergencyMedicalSavings) || 0 : 0,
       Number(savingsGoal) || 0
     )
 
@@ -171,34 +175,69 @@ export function AuthForm() {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="fixed-expenses">Fixed Expenses</Label>
-                    <div className="relative">
-                      <IndianRupee className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        id="fixed-expenses"
-                        type="number"
-                        placeholder="10000"
-                        className="pl-9"
-                        value={fixedExpenses}
-                        onChange={(e) => setFixedExpenses(e.target.value)}
-                      />
-                    </div>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="fixed-expenses">Fixed Expenses</Label>
+                  <div className="relative">
+                    <IndianRupee className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      id="fixed-expenses"
+                      type="number"
+                      placeholder="10000"
+                      className="pl-9"
+                      value={fixedExpenses}
+                      onChange={(e) => setFixedExpenses(e.target.value)}
+                    />
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="savings-goal">Savings Goal</Label>
+                </div>
+
+                {/* Emergency Medical Savings */}
+                <div className="rounded-lg border border-border bg-secondary/30 p-3">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="enable-emergency"
+                      checked={enableEmergency}
+                      onCheckedChange={(checked) => {
+                        setEnableEmergency(checked === true)
+                        if (!checked) setEmergencyMedicalSavings("")
+                      }}
+                    />
+                    <Label htmlFor="enable-emergency" className="flex cursor-pointer items-center gap-1.5 text-sm">
+                      <HeartPulse className="h-4 w-4 text-destructive" />
+                      Emergency Medical Savings
+                    </Label>
+                  </div>
+                  <div className={`mt-3 transition-opacity ${enableEmergency ? "opacity-100" : "pointer-events-none opacity-40"}`}>
                     <div className="relative">
                       <IndianRupee className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <Input
-                        id="savings-goal"
+                        id="emergency-savings"
                         type="number"
-                        placeholder="5000"
+                        placeholder="500"
                         className="pl-9"
-                        value={savingsGoal}
-                        onChange={(e) => setSavingsGoal(e.target.value)}
+                        value={emergencyMedicalSavings}
+                        onChange={(e) => setEmergencyMedicalSavings(e.target.value)}
+                        disabled={!enableEmergency}
+                        min="0"
                       />
                     </div>
+                    <p className="mt-1.5 text-xs text-muted-foreground">
+                      This amount will be deducted from your daily budget for medical emergencies.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="savings-goal">Savings Goal</Label>
+                  <div className="relative">
+                    <IndianRupee className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      id="savings-goal"
+                      type="number"
+                      placeholder="5000"
+                      className="pl-9"
+                      value={savingsGoal}
+                      onChange={(e) => setSavingsGoal(e.target.value)}
+                    />
                   </div>
                 </div>
 

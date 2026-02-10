@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Flame,
   Target,
@@ -21,6 +22,7 @@ import {
   Save,
   Calendar,
   Award,
+  HeartPulse,
 } from "lucide-react"
 
 function Confetti() {
@@ -83,6 +85,8 @@ export function UserProfile() {
   const [editMode, setEditMode] = useState(false)
   const [income, setIncome] = useState("")
   const [expenses, setExpenses] = useState("")
+  const [editEnableEmergency, setEditEnableEmergency] = useState(false)
+  const [emergencySavings, setEmergencySavings] = useState("")
   const [goal, setGoal] = useState("")
   const [showConfetti, setShowConfetti] = useState(false)
   const [prevGoalProgress, setPrevGoalProgress] = useState(0)
@@ -136,6 +140,7 @@ export function UserProfile() {
     updateBudgetSettings(
       Number(income) || user!.monthlyIncome,
       Number(expenses) || user!.fixedExpenses,
+      editEnableEmergency ? Number(emergencySavings) || 0 : 0,
       Number(goal) || user!.savingsGoal
     )
     setEditMode(false)
@@ -249,6 +254,8 @@ export function UserProfile() {
               onClick={() => {
                 setIncome(String(user.monthlyIncome))
                 setExpenses(String(user.fixedExpenses))
+                setEditEnableEmergency(user.emergencyMedicalSavings > 0)
+                setEmergencySavings(String(user.emergencyMedicalSavings))
                 setGoal(String(user.savingsGoal))
                 setEditMode(true)
               }}
@@ -282,6 +289,35 @@ export function UserProfile() {
                     value={expenses}
                     onChange={(e) => setExpenses(e.target.value)}
                   />
+                </div>
+              </div>
+              <div className="rounded-lg border border-border bg-secondary/30 p-3">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="edit-enable-emergency"
+                    checked={editEnableEmergency}
+                    onCheckedChange={(checked) => {
+                      setEditEnableEmergency(checked === true)
+                      if (!checked) setEmergencySavings("0")
+                    }}
+                  />
+                  <Label htmlFor="edit-enable-emergency" className="flex cursor-pointer items-center gap-1.5 text-sm">
+                    <HeartPulse className="h-4 w-4 text-destructive" />
+                    Emergency Medical Savings
+                  </Label>
+                </div>
+                <div className={`mt-3 transition-opacity ${editEnableEmergency ? "opacity-100" : "pointer-events-none opacity-40"}`}>
+                  <div className="relative">
+                    <IndianRupee className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      type="number"
+                      className="pl-9"
+                      value={emergencySavings}
+                      onChange={(e) => setEmergencySavings(e.target.value)}
+                      disabled={!editEnableEmergency}
+                      min="0"
+                    />
+                  </div>
                 </div>
               </div>
               <div className="flex flex-col gap-2">
@@ -324,6 +360,17 @@ export function UserProfile() {
                   {"₹"}{user.fixedExpenses.toLocaleString("en-IN")}
                 </span>
               </div>
+              {user.emergencyMedicalSavings > 0 && (
+                <div className="flex items-center justify-between rounded-lg bg-destructive/5 px-4 py-3">
+                  <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <HeartPulse className="h-3.5 w-3.5 text-destructive" />
+                    Emergency Medical
+                  </span>
+                  <span className="font-medium text-foreground">
+                    {"₹"}{user.emergencyMedicalSavings.toLocaleString("en-IN")}
+                  </span>
+                </div>
+              )}
               <div className="flex items-center justify-between rounded-lg bg-secondary/50 px-4 py-3">
                 <span className="text-sm text-muted-foreground">Savings Goal</span>
                 <span className="font-medium text-foreground">

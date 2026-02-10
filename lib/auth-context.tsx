@@ -6,6 +6,7 @@ export interface User {
   email: string
   monthlyIncome: number
   fixedExpenses: number
+  emergencyMedicalSavings: number
   savingsGoal: number
   createdAt: string
 }
@@ -37,11 +38,11 @@ interface AuthContextType {
   daysInCurrentMonth: number
   spendableAmount: number
   login: (email: string, password: string) => boolean
-  signup: (email: string, password: string, monthlyIncome: number, fixedExpenses: number, savingsGoal: number) => boolean
+  signup: (email: string, password: string, monthlyIncome: number, fixedExpenses: number, emergencyMedicalSavings: number, savingsGoal: number) => boolean
   logout: () => void
   addExpense: (amount: number, category: string, description: string) => void
   deleteExpense: (id: string) => void
-  updateBudgetSettings: (monthlyIncome: number, fixedExpenses: number, savingsGoal: number) => void
+  updateBudgetSettings: (monthlyIncome: number, fixedExpenses: number, emergencyMedicalSavings: number, savingsGoal: number) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -150,7 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   )
 
   const spendableAmount = user
-    ? user.monthlyIncome - user.fixedExpenses - user.savingsGoal
+    ? user.monthlyIncome - user.fixedExpenses - user.emergencyMedicalSavings - user.savingsGoal
     : 15000
 
   const daysInCurrentMonth = getDaysInMonth()
@@ -169,6 +170,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     password: string,
     monthlyIncome: number,
     fixedExpenses: number,
+    emergencyMedicalSavings: number,
     savingsGoal: number
   ): boolean => {
     const existingUsers = JSON.parse(
@@ -182,6 +184,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       monthlyIncome,
       fixedExpenses,
+      emergencyMedicalSavings,
       savingsGoal,
       createdAt: new Date().toISOString(),
     }
@@ -316,11 +319,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const updateBudgetSettings = (
     monthlyIncome: number,
     fixedExpenses: number,
+    emergencyMedicalSavings: number,
     savingsGoal: number
   ) => {
     if (!user) return
 
-    const updatedUser = { ...user, monthlyIncome, fixedExpenses, savingsGoal }
+    const updatedUser = { ...user, monthlyIncome, fixedExpenses, emergencyMedicalSavings, savingsGoal }
     setUser(updatedUser)
 
     localStorage.setItem(
@@ -334,7 +338,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const updatedUsers = existingUsers.map(
       (u: { email: string; password: string }) => {
         if (u.email === user.email) {
-          return { ...u, monthlyIncome, fixedExpenses, savingsGoal }
+          return { ...u, monthlyIncome, fixedExpenses, emergencyMedicalSavings, savingsGoal }
         }
         return u
       }
