@@ -1,33 +1,31 @@
-import React from "react"
-import type { Metadata } from "next"
-import { Inter, Space_Grotesk } from "next/font/google"
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import Footer from '@/components/footer'; // ✅ ADD THIS IMPORT
 
-import "./globals.css"
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space-grotesk",
-})
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "SaveWise - Smart Personal Finance Tracker",
-  description:
-    "Track your daily budget, plan purchases wisely, and build saving streaks with SaveWise.",
-}
+  title: 'Priope - Daily Financial Awareness for Students',
+  description: 'Help students manage finances through daily spending awareness',
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased min-h-screen`}
-      >
-        {children}
+      <body className={`${inter.className} min-h-screen flex flex-col`}>
+        {/* Main Content Area */}
+        <main className="flex-grow">
+          {children}
+        </main>
+        
+        {/* Footer Component - ADDED HERE */}
+        <Footer />
       </body>
     </html>
-  )
+  );
 }
